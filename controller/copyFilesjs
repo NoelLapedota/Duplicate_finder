@@ -1,0 +1,45 @@
+const fs = require("fs-extra");
+
+
+
+class FileImporter {
+  constructor(from, to) {
+    this.from = from;
+    this.to = to;
+  }
+
+  async importFiles() {
+    try {
+      // Read the content of the source directory
+      const content = await fs.readdirSync(this.from, "utf-8");
+
+      // Iterate over the files in the source directory
+      for (let i = 0; i < content.length; i++) {
+        const stats = await fs.lstat(this.from + '/' + content[i]);
+
+        // Check if the current item is a file
+        if (!stats.isFile()) {
+          console.log(this.from + '/' + content[i] + ` removed!!`);
+        }
+      }
+
+      // Copy the files from the source directory to the destination directory
+      const copyFileSync = await fs.copySync(this.from, this.to, {
+        overwrite: false,
+      });
+
+      console.log("Imported files into " + this.to);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+}
+
+
+
+
+
+
+
+
+module.exports = FileImporter;
